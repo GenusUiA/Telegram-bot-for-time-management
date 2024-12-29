@@ -1,0 +1,2 @@
+runtime: python39  # или вашу версию Python (python310, python311)
+entrypoint: "python telegram_bot.py"
