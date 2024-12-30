@@ -123,7 +123,7 @@ def update_character_level(character):
          return True
     return False # Уровень не повысился
     
-current_character = Character()
+current_character = Character(name="Программист")
 
 
 # Обработчик команды /complete task_id
@@ -157,11 +157,8 @@ async def complete_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text=message
     )
 
-
-    if task["type"] == "one_time":
-        del tasks[task_id]  # Удаляем выполненную однодневную задачу
-    else:
-        tasks[task_id]["is_completed_today"] = True  # Отмечаем, что задача выполнена на сегодня
+    if task.get("type") == "one_time": # безопасно получаем тип задачи
+        del tasks[task_id] 
 
 
 if __name__ == '__main__':
