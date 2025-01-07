@@ -67,23 +67,33 @@ async def start_coding_command(update: Update, context: ContextTypes.DEFAULT_TYP
 
 # Обработчик команды /add_task
 async def add_task_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if context.args and len(context.args) >= 2:
-        description = " ".join(context.args[:-1])
-        task_type = context.args[-1].lower()
-        xp = 0
-        if task_type in ["daily", "one_time"]:
-            new_task_id = f"task{len(tasks) + 1}"
-            tasks[new_task_id] = {
-                "description": description,
-                "xp": xp,  
-                "type": task_type
-            }
-            await context.bot.send_message(chat_id=update.effective_chat.id, text=f"Задача '{description}' (тип: {task_type}) добавлена с ID: {new_task_id}")
-        else:
-            await context.bot.send_message(chat_id=update.effective_chat.id, text="Неверный тип задачи. Должно быть 'daily' или 'one_time'.")
+    if context.args and len(context.args) >= 3:
+        description = " ".join(context.args[:-2])
+        task_type = context.args[-2].lower()
+        try:
+            xp = int(context.args[-1])
+            if 0 <= xp <= 100:
+                new_task_id = f"task{len(tasks) + 1}"
+                tasks[new_task_id] = {
+                    "description": description,
+                    "xp": xp,
+                    "type": task_type
+                }
+                await context.bot.send_message(chat_id=update.effective_chat.id,
+                                               text=f"Задача '{description}' (тип: {task_type}, опыт: {xp}) добавлена с ID: {new_task_id}")
+            else:
+                await context.bot.send_message(chat_id=update.effective_chat.id, text="Опыт должен быть числом от 0 до 100.")
+        except ValueError:
+            await context.bot.send_message(chat_id=update.effective_chat.id, text="Опыт должен быть целым числом.")
+
+        # Проверка типа задачи ВНЕ try-except
+        if task_type not in ["daily", "one_time"]:
+            await context.bot.send_message(chat_id=update.effective_chat.id,
+                                           text="Неверный тип задачи. Должно быть 'daily' или 'one_time'.")
     else:
-        await context.bot.send_message(chat_id=update.effective_chat.id, text="Используйте /add_task <описание> <daily/one_time>")
-    
+        await context.bot.send_message(chat_id=update.effective_chat.id,
+                                       text="Используйте /add_task <описание> <daily/one_time> <число_опыта>")
+
 
 
 # Обработчик команды /stop_coding
